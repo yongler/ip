@@ -194,6 +194,12 @@ public class Duke {
                 tasks.get(k - 1).markAsUndone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println(tasks.get(k - 1));
+            } else if (str[0].compareTo("delete") == 0) {
+                int k = Integer.parseInt(str[1]);
+                System.out.println("Noted. I've removed this task: ");
+                System.out.println(tasks.get(tasks.size()-1).toString());
+                tasks.remove(k-1);
+                System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
             } else {
                 try {
                     addTask(whole_str, str);
