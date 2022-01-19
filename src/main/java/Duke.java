@@ -29,9 +29,7 @@ public class Duke {
         }
 
         public void printAdded() {
-            System.out.println("Got it. I've added this task: ");
-            System.out.println(this);
-            System.out.printf("Now you have %d tasks in the list.\n", tasks.size() + 1);
+
         }
 
         @Override
@@ -46,13 +44,6 @@ public class Duke {
         public Deadline(String description, String by) {
             super(description);
             this.by = by;
-        }
-
-        @Override
-        public void printAdded() {
-            System.out.println("Got it. I've added this task: ");
-            System.out.println(this);
-            System.out.printf("Now you have %d tasks in the list.\n", tasks.size() + 1);
         }
 
         @Override
@@ -88,9 +79,82 @@ public class Duke {
         }
     }
 
-//    public static void addTask() {
-//
-//    }
+    public static class TaskException extends Exception {
+        public String toString() {
+            return "☹ OOPS!!! I'm sorry, but I don't know what that means :-(";
+        }
+    }
+    public static class TodoException extends TaskException {
+        @Override
+        public String toString() {return "☹ OOPS!!! The description of a todo cannot be empty.";}
+    }
+    public static class DeadlineException extends TaskException {
+        @Override
+        public String toString() {return "☹ OOPS!!! The description of a deadline cannot be empty.";}
+    }
+    public static class EventException extends TaskException {
+        @Override
+        public String toString() {return "☹ OOPS!!! The description of a event cannot be empty.";}
+    }
+
+    public static void addTask(String whole_str, String[] str) throws TaskException {
+        if (str[0].compareTo("deadline") == 0) {
+            if (str.length == 1) {
+                throw new DeadlineException();
+            }
+            String stuff = "";
+            String deadline = "";
+
+            for (int i =1;i< str.length;i++) {
+                if (str[i].compareTo("/by") == 0) {
+                    for (int j =1;j<i;j++) {
+                        stuff += str[j] + " ";
+                    }
+                    for (int j =i+1;j<str.length;j++) {
+                        deadline += str[j] + " ";
+                    }
+                    break;
+                }
+            }
+            tasks.add(new Deadline(stuff, deadline));
+        } else if (str[0].compareTo("todo") == 0) {
+            if (str.length == 1) {
+                throw new TodoException();
+            }
+
+            String stuff = "";
+            for (int i =1;i< str.length;i++) {
+                stuff += str[i] + " ";
+            }
+            tasks.add(new Todo(stuff));
+        } else if (str[0].compareTo("event") == 0) {
+            if (str.length == 1) {
+                throw new EventException();
+            }
+
+            String stuff = "";
+            String deadline = "";
+
+            for (int i =1;i< str.length;i++) {
+                if (str[i].compareTo("/at") == 0) {
+                    for (int j =1;j<i;j++) {
+                        stuff += str[j] + " ";
+                    }
+                    for (int j =i+1;j<str.length;j++) {
+                        deadline += str[j] + " ";
+                    }
+                    break;
+                }
+            }
+            tasks.add(new Event(stuff, deadline));
+        } else {
+            throw new TaskException();
+        }
+
+        System.out.println("Got it. I've added this task: ");
+        System.out.println(tasks.get(tasks.size()-1).toString());
+        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+    }
 
     public static void main(String[] args) {
         String logo = " ____        _        \n"
@@ -130,46 +194,12 @@ public class Duke {
                 tasks.get(k - 1).markAsUndone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println(tasks.get(k - 1));
-            } else if (str[0].compareTo("deadline") == 0) {
-                String stuff = "";
-                String deadline = "";
-
-                for (int i =1;i< str.length;i++) {
-                    if (str[i].compareTo("/by") == 0) {
-                        for (int j =1;j<i;j++) {
-                            stuff += str[j] + " ";
-                        }
-                        for (int j =i+1;j<str.length;j++) {
-                            deadline += str[j] + " ";
-                        }
-                        break;
-                    }
-                }
-                tasks.add(new Deadline(stuff, deadline));
-            } else if (str[0].compareTo("todo") == 0) {
-                String stuff = "";
-                for (int i =1;i< str.length;i++) {
-                    stuff += str[i] + " ";
-                }
-                tasks.add(new Todo(stuff));
-            } else if (str[0].compareTo("event") == 0) {
-                String stuff = "";
-                String deadline = "";
-
-                for (int i =1;i< str.length;i++) {
-                    if (str[i].compareTo("/at") == 0) {
-                        for (int j =1;j<i;j++) {
-                            stuff += str[j] + " ";
-                        }
-                        for (int j =i+1;j<str.length;j++) {
-                            deadline += str[j] + " ";
-                        }
-                        break;
-                    }
-                }
-                tasks.add(new Event(stuff, deadline));
             } else {
-                tasks.add(new Task(whole_str));
+                try {
+                    addTask(whole_str, str);
+                } catch (TaskException e) {
+                    System.out.println(e.toString());
+                }
             }
         }
 
