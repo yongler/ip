@@ -120,6 +120,16 @@ public class Duke {
                 System.out.println(tasks.get(tasks.size()-1).toString());
                 tasks.remove(k-1);
                 System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+            } else if (str[0].compareTo("find") == 0) {
+                String toFind = str[1];
+
+                int count = 1;
+                for (Task task: tasks) {
+                    if (task.getDescription().contains(toFind)) {
+                        System.out.println("Here are the matching tasks in your list:");
+                        System.out.printf("%d. %s\n", count, task);
+                    }
+                }
             } else {
                 try {
                     addTask(whole_str, str);
