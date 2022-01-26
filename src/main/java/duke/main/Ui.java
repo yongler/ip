@@ -19,8 +19,8 @@ public class Ui {
         System.out.println("Bye. Hope to see you again soon!");
     }
 
-    public void dividerLine() {
-        System.out.println("---------------------------------");
+    public String dividerLine() {
+        return ("---------------------------------");
     }
 
     public void showLoadingError() {

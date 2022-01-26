@@ -22,7 +22,6 @@ public class Storage {
         if (Files.notExists(Paths.get(storagePath))) {
             Files.createDirectories(Paths.get("data/"));
             Files.createFile(Paths.get(storagePath));
-            System.out.println("create file");
         }
         FileWriter fw = new FileWriter(storagePath);
         for (Task task: tasks) {

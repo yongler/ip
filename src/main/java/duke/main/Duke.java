@@ -92,7 +92,7 @@ public class Duke {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
-            ui.dividerLine();
+            System.out.println(ui.dividerLine());
             String whole_str = sc.nextLine();
             String[] str = whole_str.split(" ");
 
