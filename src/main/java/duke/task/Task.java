@@ -21,6 +21,11 @@ public class Task {
         this.isDone = false;
     }
 
+    /**
+     * Returns symbol for printing task based on its type.
+     *
+     * @return [type] where type corresponds to task type.
+     */
     public String getSymbol() {
         switch (taskType) {
         case TODO:
@@ -37,6 +42,11 @@ public class Task {
         return description;
     }
 
+    /**
+     * Returns status icon when printing task.
+     *
+     * @return X if task is done.
+     */
     public String getStatusIcon() {
         return (isDone ? "X" : " "); // mark done duke.task with X
     }
@@ -46,6 +56,11 @@ public class Task {
         return String.format("[%s] %s", getStatusIcon(), description);
     }
 
+    /**
+     * Formats task to be saved into backup file.
+     *
+     * @return Formatted string for saving into backup file.
+     */
     public String convertToSaveFormat() {
         return String.format("%s | %s | %s", getSymbol(), getStatusIcon(), description);
     }
