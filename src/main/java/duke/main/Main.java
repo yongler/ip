@@ -5,3 +5,4 @@ public class Main {
         new Duke("data/tasks.txt").run();
     }
 }
+
