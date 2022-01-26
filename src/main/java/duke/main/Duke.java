@@ -28,6 +28,13 @@ public class Duke {
         }
     }
 
+    /**
+     * Adds a new task depending on type and append in to tasklist.
+     *
+     * @param whole_str the whole input string.
+     * @param str the whole input string, split.
+     * @throws TaskException
+     */
     public void addTask(String whole_str, String[] str) throws TaskException {
         if (str[0].compareTo("deadline") == 0) {
             if (str.length == 1) {
@@ -87,6 +94,10 @@ public class Duke {
         System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
     }
 
+    /**
+     * Runs the whole Duke program and processes input
+     * until the 'bye' command is given.
+     */
     public void run() {
         ui.welcome();
         Scanner sc = new Scanner(System.in);

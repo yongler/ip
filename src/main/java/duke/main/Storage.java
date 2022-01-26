@@ -18,6 +18,12 @@ public class Storage {
         this.storagePath = path;
     }
 
+    /**
+     * Saves all task into backup file with path given in constructor.
+     *
+     * @param tasks The list of tasks to be saved.
+     * @throws IOException If creating directory and file throws error.
+     */
     public void saveTasksToStorage(TaskList tasks) throws IOException {
         if (Files.notExists(Paths.get(storagePath))) {
             Files.createDirectories(Paths.get("data/"));
@@ -31,6 +37,12 @@ public class Storage {
         fw.close();
     }
 
+    /**
+     * Converts formatted string in backup file into a task instance..
+     *
+     * @param str Formatted string in backup file.
+     * @return A task instance.
+     */
     public Task loadTask(String[] str) {
         Task task = new Task();
 
@@ -47,6 +59,12 @@ public class Storage {
         return task;
     }
 
+    /**
+     * Loads all task from backup file.
+     *
+     * @return List of tasks.
+     * @throws FileNotFoundException If backup file cant be found.
+     */
     public TaskList load() throws FileNotFoundException {
         File file = new File(storagePath);
 
