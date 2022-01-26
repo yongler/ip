@@ -4,6 +4,7 @@ import duke.exceptions.DukeException;
 import duke.exceptions.TaskException;
 import duke.task.Deadline;
 import duke.task.Event;
+import duke.task.Task;
 import duke.task.Todo;
 
 import java.io.FileNotFoundException;
@@ -33,7 +34,7 @@ public class Duke {
      * @param str the whole input string, split.
      * @throws TaskException
      */
-    public void addTask(String whole_str, String[] str) throws TaskException {
+    private void addTask(String whole_str, String[] str) throws TaskException {
         if (str[0].compareTo("deadline") == 0) {
             if (str.length == 1) {
                 throw new TaskException("deadline");
@@ -133,9 +134,9 @@ public class Duke {
                 String toFind = str[1];
 
                 int count = 1;
+                System.out.println("Here are the matching tasks in your list:");
                 for (Task task: tasks) {
                     if (task.getDescription().contains(toFind)) {
-                        System.out.println("Here are the matching tasks in your list:");
                         System.out.printf("%d. %s\n", count, task);
                     }
                 }
