@@ -18,4 +18,12 @@ public class Ui {
     public void bye() {
         System.out.println("Bye. Hope to see you again soon!");
     }
+
+    public void dividerLine() {
+        System.out.println("---------------------------------");
+    }
+
+    public void showLoadingError() {
+        System.out.println("No backup files to load from.");
+    }
 }

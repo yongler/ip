@@ -1,4 +1,5 @@
 package duke.task;
+import static duke.task.TaskType.TODO;
 
 public class Todo extends Task {
     public Todo(String description) {

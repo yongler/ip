@@ -3,30 +3,35 @@ package duke.main;
 import duke.exceptions.DukeException;
 import duke.exceptions.TaskException;
 
+import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.time.LocalDateTime ;
-import java.time.format.DateTimeFormatter;
+
+import duke.task.Task;
+import duke.task.Event;
+import duke.task.Deadline;
+import duke.task.Todo;
 
 public class Duke {
     private Storage storage;
     private TaskList tasks;
+    private Parser parser;
     private Ui ui;
 
     public Duke(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
         try {
-            tasks = new TaskList(storage.load());
-        } catch (DukeException e) {
+            tasks = storage.load();
+        } catch (FileNotFoundException e) {
             ui.showLoadingError();
             tasks = new TaskList();
         }
     }
 
-    public static void addTask(String whole_str, String[] str) throws TaskException {
+    public void addTask(String whole_str, String[] str) throws TaskException {
         if (str[0].compareTo("deadline") == 0) {
             if (str.length == 1) {
-                throw new DeadlineException();
+                throw new TaskException("deadline");
             }
             String stuff = "";
             String deadline = "";
@@ -42,10 +47,10 @@ public class Duke {
                     break;
                 }
             }
-            tasks.add(new Deadline(stuff, parseDate(deadline)));
+            tasks.add(new Deadline(stuff, parser.parseDate(deadline)));
         } else if (str[0].compareTo("todo") == 0) {
             if (str.length == 1) {
-                throw new TodoException();
+                throw new TaskException("todo");
             }
 
             String stuff = "";
@@ -55,7 +60,7 @@ public class Duke {
             tasks.add(new Todo(stuff));
         } else if (str[0].compareTo("event") == 0) {
             if (str.length == 1) {
-                throw new EventException();
+                throw new TaskException("event");
             }
 
             String stuff = "";
@@ -72,9 +77,9 @@ public class Duke {
                     break;
                 }
             }
-            tasks.add(new Event(stuff, parseDate(deadline)));
+            tasks.add(new Event(stuff, parser.parseDate(deadline)));
         } else {
-            throw new TaskException();
+            throw new TaskException("tasks");
         }
 
         System.out.println("Got it. I've added this duke.task: ");
@@ -87,7 +92,7 @@ public class Duke {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
-            System.out.println("-------------");
+            ui.dividerLine();
             String whole_str = sc.nextLine();
             String[] str = whole_str.split(" ");
 
@@ -124,7 +129,7 @@ public class Duke {
             }
 
             try {
-                storage.saveTasksToStorage();
+                storage.saveTasksToStorage(tasks);
             } catch (Exception e) {
                 System.out.println("hi");
                 System.out.println(e.toString());
@@ -132,13 +137,5 @@ public class Duke {
         }
     }
 
-    public static void main(String[] args) {
-        new Duke("data/tasks.txt").run();
-    }
 
-    private static LocalDateTime parseDate(String by) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HHmm ");
-        LocalDateTime date = LocalDateTime.parse(by, formatter);
-        return date;
-    }
 }

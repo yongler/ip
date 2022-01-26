@@ -29,6 +29,7 @@ public class Task {
             return "D";
         default:
             return "";
+        }
     }
 
     public String getStatusIcon() {

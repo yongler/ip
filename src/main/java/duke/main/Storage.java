@@ -14,7 +14,7 @@ public class Storage {
         this.storagePath = path;
     }
 
-    public void saveTasksToStorage() throws IOException {
+    public void saveTasksToStorage(TaskList tasks) throws IOException {
         if (Files.notExists(Paths.get(storagePath))) {
             Files.createDirectories(Paths.get("data/"));
             Files.createFile(Paths.get(storagePath));
@@ -28,22 +28,18 @@ public class Storage {
         fw.close();
     }
 
-    public TaskList load() {
+    public TaskList load() throws FileNotFoundException {
         File file = new File(storagePath);
 
         if (!file.exists()) {
             return new TaskList();
         } else {
             TaskList tasksList = new TaskList();
-            try{
-                Scanner s = new Scanner(file);
-                while (s.hasNext()) {
-                    String[] in = s.nextLine().split("|");
+            Scanner s = new Scanner(file);
+            while (s.hasNext()) {
+                String[] in = s.nextLine().split("|");
 //                Task duke.task = addTask(in[1], in[2]);
 //                tasksList.add(duke.task);
-                }
-            } catch (FileNotFoundException e) {
-                System.out.println(e);
             }
 
             return tasksList;
