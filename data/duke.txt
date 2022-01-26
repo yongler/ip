@@ -1,3 +1,6 @@
-  |   | return book  | 2019-10-15T18:00
-  |   | return book  | 2019-10-15T18:00
-  |   | hello 
+[T] |   | hello
+[D] |   | return book | 2019/10/15 1800
+[E] |   | return book | 2019/10/15 1800
+[T] |   | hello 
+[D] |   | return book  | 2019/10/15 1800
+[E] |   | return book  | 2019/10/15 1800

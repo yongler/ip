@@ -14,11 +14,12 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return super.getSymbol() + super.toString() + "(by: " + by.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm")) + ")";
+        return super.getSymbol() + super.toString() + " (by: " + by.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm")) + ")";
     }
 
     @Override
     public String convertToSaveFormat() {
-        return String.format("%s | %s", super.convertToSaveFormat(), by);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy/MM/dd HHmm");
+        return String.format("%s | %s", super.convertToSaveFormat(), by.format((format)));
     }
 }

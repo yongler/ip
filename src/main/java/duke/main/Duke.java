@@ -131,7 +131,6 @@ public class Duke {
             try {
                 storage.saveTasksToStorage(tasks);
             } catch (Exception e) {
-                System.out.println("hi");
                 System.out.println(e.toString());
             }
         }

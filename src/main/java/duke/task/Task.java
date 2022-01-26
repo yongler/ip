@@ -5,6 +5,8 @@ public class Task {
     protected boolean isDone;
     protected TaskType taskType;
 
+    public Task() {}
+
     public Task(String description, TaskType taskType) {
         this.description = description;
         this.isDone = false;
@@ -22,11 +24,11 @@ public class Task {
     public String getSymbol() {
         switch (taskType) {
         case TODO:
-            return "T";
+            return "[T]";
         case EVENT:
-            return "E";
+            return "[E]";
         case DEADLINE:
-            return "D";
+            return "[D]";
         default:
             return "";
         }
