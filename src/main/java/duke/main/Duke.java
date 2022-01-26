@@ -2,14 +2,12 @@ package duke.main;
 
 import duke.exceptions.DukeException;
 import duke.exceptions.TaskException;
+import duke.task.Deadline;
+import duke.task.Event;
+import duke.task.Todo;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-
-import duke.task.Task;
-import duke.task.Event;
-import duke.task.Deadline;
-import duke.task.Todo;
 
 public class Duke {
     private Storage storage;
@@ -106,12 +104,12 @@ public class Duke {
                 }
             } else if (str[0].compareTo("mark") == 0) {
                 int k = Integer.parseInt(str[1]);
-                tasks.get(k - 1).markAsDone();
+                tasks.get(k - 1).setAsDone();
                 System.out.println("Nice! I've marked this duke.task as done: ");
                 System.out.println(tasks.get(k - 1));
             } else if (str[0].compareTo("unmark") == 0) {
                 int k = Integer.parseInt(str[1]);
-                tasks.get(k - 1).markAsUndone();
+                tasks.get(k - 1).setAsUndone();
                 System.out.println("OK, I've marked this duke.task as not done yet:");
                 System.out.println(tasks.get(k - 1));
             } else if (str[0].compareTo("delete") == 0) {

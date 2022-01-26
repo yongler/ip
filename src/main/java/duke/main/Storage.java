@@ -1,15 +1,17 @@
 package duke.main;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Scanner;
-
 import duke.task.Deadline;
 import duke.task.Event;
 import duke.task.Task;
 import duke.task.Todo;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Storage {
     private String storagePath;
@@ -42,7 +44,7 @@ public class Storage {
             task = new Event(str[2], Parser.parseDate(str[3]));
         }
         if (str[1].equals("X")) {
-            task.markAsDone();
+            task.setAsDone();
         }
         return task;
     }
