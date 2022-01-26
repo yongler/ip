@@ -10,7 +10,7 @@ What can I do for you?
 -------------
 Here are the tasks in your list:
 -------------
-Got it. I've added this task:
+Got it. I've added this duke.task:
 [ ] blah
 Now you have 1 tasks in the list.
 -------------
