@@ -1,8 +1,16 @@
-import org.w3c.dom.events.EventException;
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+import java.io.IOException;
+import java.io.FileWriter;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Duke {
     protected static ArrayList<Task> tasks;
@@ -14,7 +22,6 @@ public class Duke {
         public Task(String description) {
             this.description = description;
             this.isDone = false;
-            printAdded();
         }
 
         public void markAsDone() {
@@ -28,13 +35,17 @@ public class Duke {
             return (isDone ? "X" : " "); // mark done task with X
         }
 
-        public void printAdded() {
-
-        }
+//        public String getSymbol() {
+//            return ;
+//        }
 
         @Override
         public String toString() {
             return String.format("[%s] %s", getStatusIcon(), description);
+        }
+
+        public String convertToSaveFormat() {
+            return String.format("%s | %s | %s", " ", getStatusIcon(), description);
         }
     }
 
@@ -50,6 +61,11 @@ public class Duke {
         public String toString() {
             return "[D]" + super.toString() + "(by: " + this.by + ")";
         }
+
+        @Override
+        public String convertToSaveFormat() {
+            return String.format("%s | %s", super.convertToSaveFormat(), by);
+        }
     }
 
     public static class Todo extends Task {
@@ -62,6 +78,11 @@ public class Duke {
         @Override
         public String toString() {
             return "[T]" + super.toString();
+        }
+
+        @Override
+        public String convertToSaveFormat() {
+            return String.format("%s", super.convertToSaveFormat());
         }
     }
 
@@ -77,9 +98,20 @@ public class Duke {
         public String toString() {
             return "[E]" + super.toString() + "(by: " + by + ")";
         }
+
+        @Override
+        public String convertToSaveFormat() {
+            return String.format("%s | %s", super.convertToSaveFormat(), by);
+        }
     }
 
-    public static class TaskException extends Exception {
+    private static class DukeException extends Exception {
+        public String toString() {
+            return "";
+        }
+    }
+
+    public static class TaskException extends DukeException {
         public String toString() {
             return "☹ OOPS!!! I'm sorry, but I don't know what that means :-(";
         }
@@ -156,6 +188,50 @@ public class Duke {
         System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
     }
 
+    private static class StorageException extends DukeException {
+        public String toString() {
+            return "☹ OOPS!!! I'm sorry, but I don't know what that means :-(";
+        }
+    }
+
+    private static void saveTasksToStorage() throws Exception {
+        String storagePath = "data/duke.txt";
+        if (Files.notExists(Paths.get(storagePath))) {
+            Files.createDirectories(Paths.get("data/"));
+            Files.createFile(Paths.get(storagePath));
+            System.out.println("create file");
+        }
+        FileWriter fw = new FileWriter(storagePath);
+        for (Task task: tasks) {
+            fw.write(task.convertToSaveFormat());
+            fw.write("\n");
+        }
+        fw.close();
+    }
+
+    private static ArrayList<Task> loadTasksFromStorage() {
+        String storagePath = "data/duke.txt";
+        File file = new File(storagePath);
+
+        if (!file.exists()) {
+            return new ArrayList<Task>();
+        } else {
+            ArrayList<Task> tasksList = new ArrayList<>();
+            try{
+                Scanner s = new Scanner(file);
+                while (s.hasNext()) {
+                    String[] in = s.nextLine().split("|");
+//                Task task = addTask(in[1], in[2]);
+//                tasksList.add(task);
+                }
+            } catch (FileNotFoundException e) {
+                System.out.println(e);
+            }
+
+            return tasksList;
+        }
+    }
+
     public static void main(String[] args) {
         String logo = " ____        _        \n"
                 + "|  _ \\ _   _| | _____ \n"
@@ -169,7 +245,7 @@ public class Duke {
         System.out.println("Hello! I'm NewDuke");
         System.out.println("What can I do for you?");
 
-        tasks = new ArrayList<>();
+        tasks = loadTasksFromStorage();
 
         while (true) {
             System.out.println("-------------");
@@ -206,6 +282,12 @@ public class Duke {
                 } catch (TaskException e) {
                     System.out.println(e.toString());
                 }
+            }
+            try {
+                saveTasksToStorage();
+            } catch (Exception e) {
+                System.out.println("hi");
+                System.out.println(e.toString());
             }
         }
 
