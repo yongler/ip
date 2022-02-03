@@ -7,6 +7,11 @@ public class Task {
 
     public Task() {}
 
+    /**
+     * Defines a task.
+     * @param description Description of task to do.
+     * @param taskType Type of task.
+     */
     public Task(String description, TaskType taskType) {
         this.description = description;
         this.isDone = false;

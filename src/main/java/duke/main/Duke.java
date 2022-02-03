@@ -1,5 +1,8 @@
 package duke.main;
 
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import duke.exceptions.DukeException;
 import duke.exceptions.TaskException;
 import duke.task.Deadline;
@@ -7,15 +10,17 @@ import duke.task.Event;
 import duke.task.Task;
 import duke.task.Todo;
 
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+
 
 public class Duke {
-    private Storage storage;
+    private final Storage storage;
+    private final Ui ui;
     private TaskList tasks;
-    private Parser parser;
-    private Ui ui;
 
+    /**
+     * Create duke object.
+     * @param filePath Specify storage file path.
+     */
     public Duke(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -28,68 +33,69 @@ public class Duke {
     }
 
     /**
-     * Adds a new task depending on type and append in to tasklist.
+     * Adds a new task depending on type and append in to tasks.
      *
-     * @param whole_str the whole input string.
-     * @param str the whole input string, split.
-     * @throws TaskException
+     * @param str       the whole input string, split.
+     * @throws TaskException if no details when adding.
      */
-    private void addTask(String whole_str, String[] str) throws TaskException {
+    private void addTask(String[] str) throws TaskException {
         if (str[0].compareTo("deadline") == 0) {
             if (str.length == 1) {
                 throw new TaskException("deadline");
             }
-            String stuff = "";
-            String deadline = "";
+
+            StringBuilder stuff = new StringBuilder();
+            StringBuilder deadline = new StringBuilder();
 
             for (int i = 1; i < str.length; i++) {
-                if (str[i].compareTo("/by") == 0) {
+                if (str[i].compareTo("/at") == 0) {
                     for (int j = 1; j < i; j++) {
-                        stuff += str[j] + " ";
+                        stuff.append(str[j]).append(" ");
+
                     }
                     for (int j = i + 1; j < str.length; j++) {
-                        deadline += str[j] + " ";
+                        deadline.append(str[j]).append(" ");
                     }
                     break;
                 }
             }
-            tasks.add(new Deadline(stuff, parser.parseDate(deadline)));
+            tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
         } else if (str[0].compareTo("todo") == 0) {
             if (str.length == 1) {
                 throw new TaskException("todo");
             }
 
-            String stuff = "";
+            StringBuilder stuff = new StringBuilder();
             for (int i = 1; i < str.length; i++) {
-                stuff += str[i] + " ";
+                stuff.append(str[i]).append(" ");
             }
-            tasks.add(new Todo(stuff));
+            tasks.add(new Todo(stuff.toString()));
         } else if (str[0].compareTo("event") == 0) {
             if (str.length == 1) {
                 throw new TaskException("event");
             }
 
-            String stuff = "";
-            String deadline = "";
+            StringBuilder stuff = new StringBuilder();
+            StringBuilder deadline = new StringBuilder();
 
-            for (int i =1;i< str.length;i++) {
+            for (int i = 1; i < str.length; i++) {
                 if (str[i].compareTo("/at") == 0) {
-                    for (int j =1;j<i;j++) {
-                        stuff += str[j] + " ";
+                    for (int j = 1; j < i; j++) {
+                        stuff.append(str[j]).append(" ");
                     }
-                    for (int j =i+1;j<str.length;j++) {
-                        deadline += str[j] + " ";
+                    for (int j = i + 1; j < str.length; j++) {
+                        deadline.append(str[j]).append(" ");
                     }
                     break;
                 }
             }
-            tasks.add(new Event(stuff, parser.parseDate(deadline)));
+            tasks.add(new Event(stuff.toString(), Parser.parseDate(deadline.toString())));
         } else {
             throw new TaskException("tasks");
         }
 
         System.out.println("Got it. I've added this duke.task: ");
-        System.out.println(tasks.get(tasks.size()-1).toString());
+        System.out.println(tasks.get(tasks.size() - 1).toString());
         System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
     }
 
@@ -103,8 +109,8 @@ public class Duke {
 
         while (true) {
             System.out.println(ui.dividerLine());
-            String whole_str = sc.nextLine();
-            String[] str = whole_str.split(" ");
+            String wholeString = sc.nextLine();
+            String[] str = wholeString.split(" ");
 
             if (str[0].compareTo("bye") == 0) {
                 ui.bye();
@@ -127,31 +133,31 @@ public class Duke {
             } else if (str[0].compareTo("delete") == 0) {
                 int k = Integer.parseInt(str[1]);
                 System.out.println("Noted. I've removed this duke.task: ");
-                System.out.println(tasks.get(tasks.size()-1).toString());
-                tasks.remove(k-1);
+                System.out.println(tasks.get(tasks.size() - 1).toString());
+                tasks.remove(k - 1);
                 System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
             } else if (str[0].compareTo("find") == 0) {
                 String toFind = str[1];
 
                 int count = 1;
                 System.out.println("Here are the matching tasks in your list:");
-                for (Task task: tasks) {
+                for (Task task : tasks) {
                     if (task.getDescription().contains(toFind)) {
                         System.out.printf("%d. %s\n", count, task);
                     }
                 }
             } else {
                 try {
-                    addTask(whole_str, str);
+                    addTask(str);
                 } catch (DukeException e) {
-                    System.out.println(e.toString());
+                    e.printStackTrace();
                 }
             }
 
             try {
                 storage.saveTasksToStorage(tasks);
             } catch (Exception e) {
-                System.out.println(e.toString());
+                e.printStackTrace();
             }
         }
     }

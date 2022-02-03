@@ -11,9 +11,4 @@ public class TaskException extends DukeException {
     public TaskException(String message) {
         super(message);
     }
-
-    public TaskException(String message, String debugMessage) {
-        super(message);
-        this.debugMessage = debugMessage;
-    }
 }

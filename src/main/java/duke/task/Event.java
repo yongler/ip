@@ -1,13 +1,18 @@
 package duke.task;
 
+import static duke.task.TaskType.EVENT;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static duke.task.TaskType.EVENT;
 
 public class Event extends Task {
     protected LocalDateTime by;
 
+    /**
+     * Defines an event.
+     * @param description Description of task to do.
+     * @param by Time of event.
+     */
     public Event(String description, LocalDateTime by) {
         super(description, EVENT);
         this.by = by;
@@ -15,7 +20,8 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return super.getSymbol() + super.toString() + " (at: " + by.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm")) + ")";
+        return super.getSymbol() + super.toString()
+                + " (at: " + by.format(DateTimeFormatter.ofPattern("MMM dd yyyy HHmm")) + ")";
     }
 
     @Override

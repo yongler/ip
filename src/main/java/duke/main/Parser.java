@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Parser {
-    public Parser() {};
+    public Parser() {}
 
     /**
      * Parses date and time in string format into LocalDateTime instance.
@@ -14,7 +14,6 @@ public class Parser {
      */
     public static LocalDateTime parseDate(String by) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HHmm");
-        LocalDateTime date = LocalDateTime.parse(by.trim(), formatter);
-        return date;
+        return LocalDateTime.parse(by.trim(), formatter);
     }
 }

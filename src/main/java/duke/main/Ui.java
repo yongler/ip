@@ -27,7 +27,7 @@ public class Ui {
 
     /**
      * Prints divider line for aesthetics purposes.
-     * @return
+     * @return A dashed line.
      */
     public String dividerLine() {
         return ("---------------------------------");
