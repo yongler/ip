@@ -5,6 +5,9 @@ import static duke.task.TaskType.EVENT;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Event class.
+ */
 public class Event extends Task {
     protected LocalDateTime by;
 

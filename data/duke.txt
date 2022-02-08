@@ -1,4 +1,3 @@
+[T] | X | hello
+[T] | X | hello
 [T] |   | hello
-[T] |   | hello
-[T] |   | hello
-[T] |   | asd
