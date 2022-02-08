@@ -109,63 +109,94 @@ public class Duke extends Application {
     }
 
     /**
+     * Adds a new Todo to tasks.
+     *
+     * @param str The whole input string, split.
+     * @throws TaskException if no details when adding.
+     */
+    private void addTodo(String[] str) throws TaskException {
+        if (str.length == 1) {
+            throw new TaskException("todo");
+        }
+
+        StringBuilder stuff = new StringBuilder();
+        for (int i = 1; i < str.length; i++) {
+            stuff.append(str[i]).append(" ");
+        }
+        tasks.add(new Todo(stuff.toString()));
+    }
+
+    /**
+     * Adds a new Deadline to tasks.
+     *
+     * @param str The whole input string, split.
+     * @throws TaskException if no details when adding.
+     */
+    private void addDeadline(String[] str) throws TaskException {
+        if (str.length == 1) {
+            throw new TaskException("deadline");
+        }
+
+        StringBuilder stuff = new StringBuilder();
+        StringBuilder deadline = new StringBuilder();
+
+        for (int i = 1; i < str.length; i++) {
+            if (str[i].compareTo("/at") == 0) {
+                for (int j = 1; j < i; j++) {
+                    stuff.append(str[j]).append(" ");
+
+                }
+                for (int j = i + 1; j < str.length; j++) {
+                    deadline.append(str[j]).append(" ");
+                }
+                break;
+            }
+        }
+        tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
+    }
+
+    /**
+     * Adds a new Event to tasks.
+     *
+     * @param str The whole input string, split.
+     * @throws TaskException if no details when adding.
+     */
+    private void addEvent(String[] str) throws TaskException {
+
+        if (str.length == 1) {
+            throw new TaskException("event");
+        }
+
+        StringBuilder stuff = new StringBuilder();
+        StringBuilder deadline = new StringBuilder();
+
+        for (int i = 1; i < str.length; i++) {
+            if (str[i].compareTo("/at") == 0) {
+                for (int j = 1; j < i; j++) {
+                    stuff.append(str[j]).append(" ");
+                }
+                for (int j = i + 1; j < str.length; j++) {
+                    deadline.append(str[j]).append(" ");
+                }
+                break;
+            }
+        }
+        tasks.add(new Event(stuff.toString(), Parser.parseDate(deadline.toString())));
+    }
+
+    /**
      * Adds a new task depending on type and append in to tasks.
      *
-     * @param str       the whole input string, split.
+     * @param str The whole input string, split.
      * @throws TaskException if no details when adding.
      */
     private void addTask(String[] str) throws TaskException {
         if (str[0].compareTo("deadline") == 0) {
-            if (str.length == 1) {
-                throw new TaskException("deadline");
-            }
-
-            StringBuilder stuff = new StringBuilder();
-            StringBuilder deadline = new StringBuilder();
-
-            for (int i = 1; i < str.length; i++) {
-                if (str[i].compareTo("/at") == 0) {
-                    for (int j = 1; j < i; j++) {
-                        stuff.append(str[j]).append(" ");
-
-                    }
-                    for (int j = i + 1; j < str.length; j++) {
-                        deadline.append(str[j]).append(" ");
-                    }
-                    break;
-                }
-            }
-            tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
+            addDeadline(str);
         } else if (str[0].compareTo("todo") == 0) {
-            if (str.length == 1) {
-                throw new TaskException("todo");
-            }
-
-            StringBuilder stuff = new StringBuilder();
-            for (int i = 1; i < str.length; i++) {
-                stuff.append(str[i]).append(" ");
-            }
-            tasks.add(new Todo(stuff.toString()));
+            addTodo(str);
         } else if (str[0].compareTo("event") == 0) {
-            if (str.length == 1) {
-                throw new TaskException("event");
-            }
-
-            StringBuilder stuff = new StringBuilder();
-            StringBuilder deadline = new StringBuilder();
-
-            for (int i = 1; i < str.length; i++) {
-                if (str[i].compareTo("/at") == 0) {
-                    for (int j = 1; j < i; j++) {
-                        stuff.append(str[j]).append(" ");
-                    }
-                    for (int j = i + 1; j < str.length; j++) {
-                        deadline.append(str[j]).append(" ");
-                    }
-                    break;
-                }
-            }
-            tasks.add(new Event(stuff.toString(), Parser.parseDate(deadline.toString())));
+            addEvent(str);
         } else {
             throw new TaskException("tasks");
         }
@@ -173,6 +204,66 @@ public class Duke extends Application {
         System.out.println("Got it. I've added this duke.task: ");
         System.out.println(tasks.get(tasks.size() - 1).toString());
         System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+    }
+
+    /**
+     * Find task given task number.
+     * @param str Info about task number.
+     */
+    private void findTask(String[] str) {
+        String toFind = str[1];
+
+        int count = 1;
+        System.out.println("Here are the matching tasks in your list:");
+        for (Task task : tasks) {
+            if (task.getDescription().contains(toFind)) {
+                System.out.printf("%d. %s\n", count, task);
+            }
+        }
+    }
+
+    /**
+     * Delete task.
+     * @param str Info about task number.
+     */
+    private void deleteTask(String[] str) {
+        int k = Integer.parseInt(str[1]);
+        System.out.println("Noted. I've removed this task: ");
+        System.out.println(tasks.get(tasks.size() - 1).toString());
+        tasks.remove(k - 1);
+        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+    }
+
+    /**
+     * Marks task as not done.
+     * @param str Info about task number.
+     */
+    private void unmarkTask(String[] str) {
+        int k = Integer.parseInt(str[1]);
+        tasks.get(k - 1).setAsUndone();
+        System.out.println("OK, I've marked this duke.task as not done yet:");
+        System.out.println(tasks.get(k - 1));
+    }
+
+    /**
+     * Marks task as done.
+     * @param str Info about task number.
+     */
+    private void markTask(String[] str) {
+        int k = Integer.parseInt(str[1]);
+        tasks.get(k - 1).setAsDone();
+        System.out.println("Nice! I've marked this duke.task as done: ");
+        System.out.println(tasks.get(k - 1));
+    }
+
+    /**
+     * Prints out all tasks.
+     */
+    private void listTask() {
+        System.out.println("Here are the tasks in your list:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, tasks.get(i));
+        }
     }
 
     /**
@@ -194,36 +285,15 @@ public class Duke extends Application {
                 ui.bye();
                 break;
             } else if (str[0].compareTo("list") == 0) {
-                System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < tasks.size(); i++) {
-                    System.out.printf("%d. %s\n", i + 1, tasks.get(i));
-                }
+                listTask();
             } else if (str[0].compareTo("mark") == 0) {
-                int k = Integer.parseInt(str[1]);
-                tasks.get(k - 1).setAsDone();
-                System.out.println("Nice! I've marked this duke.task as done: ");
-                System.out.println(tasks.get(k - 1));
+                markTask(str);
             } else if (str[0].compareTo("unmark") == 0) {
-                int k = Integer.parseInt(str[1]);
-                tasks.get(k - 1).setAsUndone();
-                System.out.println("OK, I've marked this duke.task as not done yet:");
-                System.out.println(tasks.get(k - 1));
+                unmarkTask(str);
             } else if (str[0].compareTo("delete") == 0) {
-                int k = Integer.parseInt(str[1]);
-                System.out.println("Noted. I've removed this duke.task: ");
-                System.out.println(tasks.get(tasks.size() - 1).toString());
-                tasks.remove(k - 1);
-                System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+                deleteTask(str);
             } else if (str[0].compareTo("find") == 0) {
-                String toFind = str[1];
-
-                int count = 1;
-                System.out.println("Here are the matching tasks in your list:");
-                for (Task task : tasks) {
-                    if (task.getDescription().contains(toFind)) {
-                        System.out.printf("%d. %s\n", count, task);
-                    }
-                }
+                findTask(str);
             } else {
                 try {
                     addTask(str);
