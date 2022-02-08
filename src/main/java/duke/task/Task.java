@@ -1,24 +1,27 @@
 package duke.task;
 
+import java.time.LocalDateTime;
+
 /**
  * Task class.
  */
-public class Task {
+public class Task implements Comparable<Task>{
     protected String description;
     protected boolean isDone;
     protected TaskType taskType;
+    protected LocalDateTime by;
 
     public Task() {}
-
     /**
      * Defines a task.
      * @param description Description of task to do.
      * @param taskType Type of task.
      */
-    public Task(String description, TaskType taskType) {
+    public Task(String description, TaskType taskType, LocalDateTime by) {
         this.description = description;
         this.isDone = false;
         this.taskType = taskType;
+        this.by = by;
     }
 
     public void setAsDone() {
@@ -72,5 +75,16 @@ public class Task {
      */
     public String convertToSaveFormat() {
         return String.format("%s | %s | %s", getSymbol(), getStatusIcon(), description);
+    }
+
+    public LocalDateTime getDeadline() {
+        return by;
+    }
+
+    @Override
+    public int compareTo(Task o) {
+        if (getDeadline() == null || o.getDeadline() == null)
+            return 0;
+        return getDeadline().compareTo(o.getDeadline());
     }
 }

@@ -9,16 +9,13 @@ import java.time.format.DateTimeFormatter;
  * Event class.
  */
 public class Event extends Task {
-    protected LocalDateTime by;
-
     /**
      * Defines an event.
      * @param description Description of task to do.
      * @param by Time of event.
      */
     public Event(String description, LocalDateTime by) {
-        super(description, EVENT);
-        this.by = by;
+        super(description, EVENT, by);
     }
 
     @Override

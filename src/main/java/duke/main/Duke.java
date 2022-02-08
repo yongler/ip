@@ -1,6 +1,8 @@
 package duke.main;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import duke.exceptions.DukeException;
@@ -141,7 +143,7 @@ public class Duke extends Application {
         StringBuilder deadline = new StringBuilder();
 
         for (int i = 1; i < str.length; i++) {
-            if (str[i].compareTo("/at") == 0) {
+            if (str[i].compareTo("/by") == 0) {
                 for (int j = 1; j < i; j++) {
                     stuff.append(str[j]).append(" ");
 
@@ -152,6 +154,7 @@ public class Duke extends Application {
                 break;
             }
         }
+        System.out.printf("HELLLLLLLO %s\n", deadline.toString());
         tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
     }
 
@@ -294,6 +297,8 @@ public class Duke extends Application {
                 deleteTask(str);
             } else if (str[0].compareTo("find") == 0) {
                 findTask(str);
+            } else if (str[0].equals("sort")) {
+                Collections.sort(tasks);
             } else {
                 try {
                     addTask(str);
