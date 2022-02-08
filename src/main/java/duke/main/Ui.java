@@ -20,7 +20,7 @@ public class Ui {
 
     /**
      * Prints bye message.
-     */
+     */      
     public void bye() {
         System.out.println("Bye. Hope to see you again soon!");
     }

@@ -25,7 +25,7 @@ public class Storage {
      *
      * @param tasks The list of tasks to be saved.
      * @throws IOException If creating directory and file throws error.
-     */
+     */   
     public void saveTasksToStorage(TaskList tasks) throws IOException {
         if (Files.notExists(Paths.get(storagePath))) {
             Files.createDirectories(Paths.get("data/"));
@@ -48,13 +48,20 @@ public class Storage {
     public Task loadTask(String[] str) {
         Task task = new Task();
 
-        if (str[0].compareTo("[D]") == 0) {
+        switch (str[0]){
+        case "[D]":
             task = new Deadline(str[2], Parser.parseDate(str[3]));
-        } else if (str[0].compareTo("[T]") == 0) {
+            break;
+        case "[T]":
             task = new Todo(str[2]);
-        } else if (str[0].compareTo("[E]") == 0) {
+            break;
+        case "[E]":
             task = new Event(str[2], Parser.parseDate(str[3]));
+            break;
+        default:
+            System.out.println("incorrect input");
         }
+
         if (str[1].equals("X")) {
             task.setAsDone();
         }
@@ -72,18 +79,19 @@ public class Storage {
 
         if (!file.exists()) {
             return new TaskList();
-        } else {
-            TaskList tasksList = new TaskList();
-            Scanner s = new Scanner(file);
-            while (s.hasNext()) {
-                String next = s.nextLine();
-
-                String[] input = next.trim().split("\\s*\\|\\s*");
-
-                Task task = loadTask(input);
-                tasksList.add(task);
-            }
-            return tasksList;
         }
+
+        TaskList tasksList = new TaskList();
+        Scanner s = new Scanner(file);
+        while (s.hasNext()) {
+            String next = s.nextLine();
+
+            String[] input = next.trim().split("\\s*\\|\\s*");
+
+            Task task = loadTask(input);
+            tasksList.add(task);
+        }
+        return tasksList;
+
     }
 }
