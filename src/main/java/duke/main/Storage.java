@@ -25,7 +25,7 @@ public class Storage {
      *
      * @param tasks The list of tasks to be saved.
      * @throws IOException If creating directory and file throws error.
-     */
+     */   
     public void saveTasksToStorage(TaskList tasks) throws IOException {
         if (Files.notExists(Paths.get(storagePath))) {
             Files.createDirectories(Paths.get("data/"));
