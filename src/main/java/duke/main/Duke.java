@@ -184,6 +184,8 @@ public class Duke extends Application {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
+            assert false : "FALSE";
+
             System.out.println(ui.dividerLine());
             String wholeString = sc.nextLine();
             String[] str = wholeString.split(" ");
