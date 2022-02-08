@@ -10,16 +10,13 @@ import java.time.format.DateTimeFormatter;
  * Deadline class.
  */
 public class Deadline extends Task {
-    protected LocalDateTime by;
-
     /**
      * Defines an deadline.
      * @param description Description of deadline to do.
      * @param by Time of deadline.
      */
     public Deadline(String description, LocalDateTime by) {
-        super(description, DEADLINE);
-        this.by = by;
+        super(description, DEADLINE, by);
     }
 
     @Override
