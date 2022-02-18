@@ -1,5 +1,2 @@
-[E] |   | return book | 2019/09/15 1800
-[E] |   | return book | 2019/10/15 1800
-[D] |   | return book  | 2019/10/15 1800
-[E] |   | return book | 2019/10/16 1800
-[E] |   | return book | 2019/10/16 1800
+[T] |   | Homework 
+[E] |   | return book  | 2019/09/15 1800

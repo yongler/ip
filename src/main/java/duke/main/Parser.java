@@ -16,4 +16,8 @@ public class Parser {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HHmm");
         return LocalDateTime.parse(by.trim(), formatter);
     }
+
+    public static String[] splitInputStringBySpaces(String input) {
+        return input.split(" ");
+    }
 }

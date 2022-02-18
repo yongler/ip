@@ -2,36 +2,18 @@ package duke.main;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Scanner;
 
 import duke.exceptions.DukeException;
-import duke.exceptions.TaskException;
 import duke.task.Deadline;
 import duke.task.Event;
 import duke.task.Task;
 import duke.task.Todo;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class Duke extends Application {
+public class Duke {
     private final Storage storage;
     private final Ui ui;
     private TaskList tasks;
-
-    private ScrollPane scrollPane;
-    private VBox dialogContainer;
-    private TextField userInput;
-    private Button sendButton;
-    private Scene scene;
 
     /**
      * Create duke object.
@@ -43,82 +25,60 @@ public class Duke extends Application {
         try {
             tasks = storage.load();
         } catch (FileNotFoundException e) {
-            ui.showLoadingError();
             tasks = new TaskList();
         }
     }
 
-    public Duke() {
-        ui = new Ui();
-        storage = new Storage("data/duke.txt");
+    /**
+     * Returns the response associated with input by user to be displayed on GUI.
+     * @param input String input from user.
+     * @return String to be displayed on GUI.
+     */
+    public String getResponse(String input) {
+        String[] str = Parser.splitInputStringBySpaces(input);
+        String response = "";
+
+        if (str[0].compareTo("bye") == 0) {
+            response = ui.bye();
+        } else if (str[0].compareTo("list") == 0) {
+            response = listTask();
+        } else if (str[0].compareTo("mark") == 0) {
+            response = markTask(str);
+        } else if (str[0].compareTo("unmark") == 0) {
+            response = unmarkTask(str);
+        } else if (str[0].compareTo("delete") == 0) {
+            response = deleteTask(str);
+        } else if (str[0].compareTo("find") == 0) {
+            response = findTask(str);
+        } else if (str[0].equals("sort")) {
+            Collections.sort(tasks);
+            response = listTask();
+        } else {
+            try {
+                response = addTask(str);
+            } catch (DukeException e) {
+                response = e.toString();
+            }
+        }
+
         try {
-            tasks = storage.load();
-        } catch (FileNotFoundException e) {
-            ui.showLoadingError();
-            tasks = new TaskList();
+            storage.saveTasksToStorage(tasks);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
 
-    @Override
-    public void start(Stage stage) {
-        //Step 1. Setting up required components
-
-        //The container for the content of the chat to scroll.
-        scrollPane = new ScrollPane();
-        dialogContainer = new VBox();
-        scrollPane.setContent(dialogContainer);
-
-        userInput = new TextField();
-        sendButton = new Button("Send");
-
-        AnchorPane mainLayout = new AnchorPane();
-        mainLayout.getChildren().addAll(scrollPane, userInput, sendButton);
-
-        scene = new Scene(mainLayout);
-
-        stage.setScene(scene);
-        stage.show();
-
-        //Step 2. Formatting the window to look as expected
-        stage.setTitle("Duke");
-        stage.setResizable(false);
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(400.0);
-
-        mainLayout.setPrefSize(400.0, 600.0);
-
-        scrollPane.setPrefSize(385, 535);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-
-        scrollPane.setVvalue(1.0);
-        scrollPane.setFitToWidth(true);
-
-        // You will need to import `javafx.scene.layout.Region` for this.
-        dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
-
-        userInput.setPrefWidth(325.0);
-
-        sendButton.setPrefWidth(55.0);
-
-        AnchorPane.setTopAnchor(scrollPane, 1.0);
-
-        AnchorPane.setBottomAnchor(sendButton, 1.0);
-        AnchorPane.setRightAnchor(sendButton, 1.0);
-
-        AnchorPane.setLeftAnchor(userInput , 1.0);
-        AnchorPane.setBottomAnchor(userInput, 1.0);
+        return response;
     }
 
     /**
      * Adds a new Todo to tasks.
      *
      * @param str The whole input string, split.
-     * @throws TaskException if no details when adding.
+     * @throws DukeException if no details when adding.
      */
-    private void addTodo(String[] str) throws TaskException {
+    private void addTodo(String[] str) throws DukeException {
         if (str.length == 1) {
-            throw new TaskException("todo");
+            throw new DukeException("todo");
         }
 
         StringBuilder stuff = new StringBuilder();
@@ -132,11 +92,11 @@ public class Duke extends Application {
      * Adds a new Deadline to tasks.
      *
      * @param str The whole input string, split.
-     * @throws TaskException if no details when adding.
+     * @throws DukeException if no details when adding.
      */
-    private void addDeadline(String[] str) throws TaskException {
+    private void addDeadline(String[] str) throws DukeException {
         if (str.length == 1) {
-            throw new TaskException("deadline");
+            throw new DukeException("deadline");
         }
 
         StringBuilder stuff = new StringBuilder();
@@ -154,7 +114,6 @@ public class Duke extends Application {
                 break;
             }
         }
-        System.out.printf("HELLLLLLLO %s\n", deadline.toString());
         tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
     }
 
@@ -162,12 +121,12 @@ public class Duke extends Application {
      * Adds a new Event to tasks.
      *
      * @param str The whole input string, split.
-     * @throws TaskException if no details when adding.
+     * @throws DukeException if no details when adding.
      */
-    private void addEvent(String[] str) throws TaskException {
+    private void addEvent(String[] str) throws DukeException {
 
         if (str.length == 1) {
-            throw new TaskException("event");
+            throw new DukeException("event");
         }
 
         StringBuilder stuff = new StringBuilder();
@@ -191,9 +150,9 @@ public class Duke extends Application {
      * Adds a new task depending on type and append in to tasks.
      *
      * @param str The whole input string, split.
-     * @throws TaskException if no details when adding.
+     * @throws DukeException if no details when adding.
      */
-    private void addTask(String[] str) throws TaskException {
+    private String addTask(String[] str) throws DukeException {
         if (str[0].compareTo("deadline") == 0) {
             addDeadline(str);
         } else if (str[0].compareTo("todo") == 0) {
@@ -201,119 +160,96 @@ public class Duke extends Application {
         } else if (str[0].compareTo("event") == 0) {
             addEvent(str);
         } else {
-            throw new TaskException("tasks");
+            throw new DukeException("tasks");
         }
 
-        System.out.println("Got it. I've added this duke.task: ");
-        System.out.println(tasks.get(tasks.size() - 1).toString());
-        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+        ui.newMessage();
+        ui.appendMessage("Got it. I've added this task: \n");
+        ui.appendMessage(String.format("%s\n",tasks.get(tasks.size() - 1)));
+        ui.appendMessage(String.format("Now you have %d tasks in the list.\n", tasks.size()));
+
+        return ui.getMessage();
     }
 
     /**
      * Find task given task number.
      * @param str Info about task number.
      */
-    private void findTask(String[] str) {
+    private String findTask(String[] str) {
         String toFind = str[1];
 
-        int count = 1;
-        System.out.println("Here are the matching tasks in your list:");
-        for (Task task : tasks) {
+        ui.newMessage();
+        ui.appendMessage("Here are the matching tasks in your list:\n");
+
+        for (int i =0;i <tasks.size();i++) {
+            Task task = tasks.get(i);
             if (task.getDescription().contains(toFind)) {
-                System.out.printf("%d. %s\n", count, task);
+                ui.appendMessage(String.format("%d %s\n", i+1, task));
             }
         }
+        return ui.getMessage();
     }
 
     /**
      * Delete task.
      * @param str Info about task number.
      */
-    private void deleteTask(String[] str) {
+    private String deleteTask(String[] str) {
         int k = Integer.parseInt(str[1]);
-        System.out.println("Noted. I've removed this task: ");
-        System.out.println(tasks.get(tasks.size() - 1).toString());
+
+        ui.newMessage();
+        ui.appendMessage("Noted. I've removed this task: \n");
+        ui.appendMessage(tasks.get(tasks.size() - 1).toString());
+        ui.appendNewLine();
+
         tasks.remove(k - 1);
-        System.out.printf("Now you have %d tasks in the list.\n", tasks.size());
+
+        ui.appendMessage(String.format("Now you have %d tasks in the list.\n", tasks.size()));
+
+        return ui.getMessage();
     }
 
     /**
      * Marks task as not done.
      * @param str Info about task number.
      */
-    private void unmarkTask(String[] str) {
+    private String unmarkTask(String[] str) {
         int k = Integer.parseInt(str[1]);
         tasks.get(k - 1).setAsUndone();
-        System.out.println("OK, I've marked this duke.task as not done yet:");
-        System.out.println(tasks.get(k - 1));
+
+        ui.newMessage();
+        ui.appendMessage("OK, I've marked this task as not done yet:\n");
+        ui.appendMessage(String.format("%s\n",tasks.get(k - 1)));
+
+        return ui.getMessage();
     }
 
     /**
      * Marks task as done.
      * @param str Info about task number.
      */
-    private void markTask(String[] str) {
+    private String markTask(String[] str) {
         int k = Integer.parseInt(str[1]);
         tasks.get(k - 1).setAsDone();
-        System.out.println("Nice! I've marked this duke.task as done: ");
-        System.out.println(tasks.get(k - 1));
+
+        ui.newMessage();
+        ui.appendMessage("Nice! I've marked this task as done: \n");
+        ui.appendMessage(String.format("%s\n",tasks.get(k - 1)));
+
+        return ui.getMessage();
     }
 
     /**
      * Prints out all tasks.
      */
-    private void listTask() {
-        System.out.println("Here are the tasks in your list:");
+    private String listTask() {
+        ui.newMessage();
+        ui.appendMessage("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.printf("%d. %s\n", i + 1, tasks.get(i));
+            ui.appendMessage(String.format("%d. %s\n", i + 1, tasks.get(i)));
         }
+
+        return ui.getMessage();
     }
-
-    /**
-     * Runs the whole Duke program and processes input
-     * until the 'bye' command is given.
-     */
-    public void run() {
-        ui.welcome();
-        Scanner sc = new Scanner(System.in);
-
-        while (true) {
-            assert false : "FALSE";
-
-            System.out.println(ui.dividerLine());
-            String wholeString = sc.nextLine();
-            String[] str = wholeString.split(" ");
-
-            if (str[0].compareTo("bye") == 0) {
-                ui.bye();
-                break;
-            } else if (str[0].compareTo("list") == 0) {
-                listTask();
-            } else if (str[0].compareTo("mark") == 0) {
-                markTask(str);
-            } else if (str[0].compareTo("unmark") == 0) {
-                unmarkTask(str);
-            } else if (str[0].compareTo("delete") == 0) {
-                deleteTask(str);
-            } else if (str[0].compareTo("find") == 0) {
-                findTask(str);
-            } else if (str[0].equals("sort")) {
-                Collections.sort(tasks);
-            } else {
-                try {
-                    addTask(str);
-                } catch (DukeException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            try {
-                storage.saveTasksToStorage(tasks);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
 }

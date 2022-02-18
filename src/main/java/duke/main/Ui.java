@@ -1,28 +1,60 @@
 package duke.main;
 
 public class Ui {
+    private StringBuilder message;
+
+    private static String dividerLine = "---------------------------------";
+
     public Ui() {
+        message = new StringBuilder();
+    }
+
+    public void newMessage() {
+        message = new StringBuilder();
+    }
+
+    public void appendMessage(String string) {
+        message.append(string);
+    }
+
+    public void appendNewLine() {
+        message.append("\n");
+    }
+
+    public void appendDividerLine() {
+        message.append(dividerLine);
+    }
+
+    public String getMessage() {
+        return message.toString();
     }
 
     /**
      * Prints welcome message.
      */
-    public void welcome() {
+    public String welcome() {
+        newMessage();
+
         String logo = " ____        _        \n"
                 + "|  _ \\ _   _| | _____ \n"
                 + "| | | | | | | |/ / _ \\\n"
                 + "| |_| | |_| |   <  __/\n"
                 + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
-        System.out.println("Hello! I'm SUPERRRRDUKE");
-        System.out.println("What can I do for you?");
+
+        message.append("Hello from\n").append(logo);
+        message.append("Hello from\n").append(logo);
+        message.append("Hello! I'm SUPERRRRDUKE\n");
+        message.append("What can I do for you?\n");
+
+        return message.toString();
     }
 
     /**
-     * Prints bye message.
-     */      
-    public void bye() {
-        System.out.println("Bye. Hope to see you again soon!");
+     * Returns bye message.
+     * @return Returns bye message.
+     */
+    public String bye() {
+        return "Bye. Hope to see you again soon!";
     }
 
     /**
@@ -30,13 +62,13 @@ public class Ui {
      * @return A dashed line.
      */
     public String dividerLine() {
-        return ("---------------------------------");
+        return dividerLine;
     }
 
     /**
      * Prints loading error if there are no backup files to laod from.
      */
-    public void showLoadingError() {
-        System.out.println("No backup files to load from.");
+    public String showLoadingError() {
+        return("No backup files to load from.");
     }
 }
