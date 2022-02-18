@@ -79,7 +79,7 @@ Example of usage:
 
 Expected outcome:
 
-Marks task 1 (todo Homework) as done.
+Marks task 1 as done.
 
 ```
 Nice! I've marked this task as done: 
@@ -96,7 +96,7 @@ Example of usage:
 
 Expected outcome:
 
-Marks task 1 (todo Homework) as undone.
+Marks task 1 as undone.
 
 ```
 OK, I've marked this task as not done yet:
@@ -113,7 +113,7 @@ Example of usage:
 
 Expected outcome:
 
-Deletes task 1 (todo Homework) as undone.
+Deletes task 1.
 
 ```
 Noted. I've removed this task: 
@@ -122,7 +122,7 @@ Noted. I've removed this task:
 
 ### Sort tasks by deadline: `sort`
 
-Sort tasks by deadline and lists them out.
+Sort tasks by deadline and lists them out (todo will be placed at the top).
 
 Example of usage: 
 
@@ -165,6 +165,8 @@ Example of usage:
 `list`
 
 Expected outcome:
+
+List all tasks (both done and undone)
 
 Description of the outcome.
 

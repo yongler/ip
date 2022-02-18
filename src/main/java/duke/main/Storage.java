@@ -8,11 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+import duke.exceptions.DukeException;
 import duke.task.Deadline;
 import duke.task.Event;
 import duke.task.Task;
 import duke.task.Todo;
 
+/**
+ * Public Storage class to load and store task list
+ */
 public class Storage {
     private final String storagePath;
 
@@ -25,18 +29,22 @@ public class Storage {
      *
      * @param tasks The list of tasks to be saved.
      * @throws IOException If creating directory and file throws error.
-     */   
-    public void saveTasksToStorage(TaskList tasks) throws IOException {
-        if (Files.notExists(Paths.get(storagePath))) {
-            Files.createDirectories(Paths.get("data/"));
-            Files.createFile(Paths.get(storagePath));
+     */
+    public void saveTasksToStorage(TaskList tasks) throws DukeException {
+        try {
+            if (Files.notExists(Paths.get(storagePath))) {
+                Files.createDirectories(Paths.get("data/"));
+                Files.createFile(Paths.get(storagePath));
+            }
+            FileWriter fw = new FileWriter(storagePath);
+            for (Task task: tasks) {
+                fw.write(task.convertToSaveFormat());
+                fw.write("\n");
+            }
+            fw.close();
+        } catch (IOException e) {
+            throw new DukeException(DukeException.STORE_TASKS_ERROR);
         }
-        FileWriter fw = new FileWriter(storagePath);
-        for (Task task: tasks) {
-            fw.write(task.convertToSaveFormat());
-            fw.write("\n");
-        }
-        fw.close();
     }
 
     /**
@@ -48,7 +56,7 @@ public class Storage {
     public Task loadTask(String[] str) {
         Task task = new Task();
 
-        switch (str[0]){
+        switch (str[0]) {
         case "[D]":
             task = new Deadline(str[2], Parser.parseDate(str[3]));
             break;

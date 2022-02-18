@@ -1,18 +1,28 @@
 package duke.main;
 
+/**
+ * Public UI class for I/O.
+ */
 public class Ui {
-    private StringBuilder message;
-
     private static String dividerLine = "---------------------------------";
+
+    private StringBuilder message;
 
     public Ui() {
         message = new StringBuilder();
     }
 
+    /**
+     * Resets message to empty.
+     */
     public void newMessage() {
         message = new StringBuilder();
     }
 
+    /**
+     * Appends string to exisitng message.
+     * @param string Input string to be appended.
+     */
     public void appendMessage(String string) {
         message.append(string);
     }
@@ -21,10 +31,10 @@ public class Ui {
         message.append("\n");
     }
 
-    public void appendDividerLine() {
-        message.append(dividerLine);
-    }
-
+    /**
+     * Gets message to be printed out.
+     * @return String to be printed out.
+     */
     public String getMessage() {
         return message.toString();
     }
@@ -42,11 +52,10 @@ public class Ui {
                 + "|____/ \\__,_|_|\\_\\___|\n";
 
         message.append("Hello from\n").append(logo);
-        message.append("Hello from\n").append(logo);
         message.append("Hello! I'm SUPERRRRDUKE\n");
         message.append("What can I do for you?\n");
 
-        return message.toString();
+        return getMessage();
     }
 
     /**
@@ -63,12 +72,5 @@ public class Ui {
      */
     public String dividerLine() {
         return dividerLine;
-    }
-
-    /**
-     * Prints loading error if there are no backup files to laod from.
-     */
-    public String showLoadingError() {
-        return("No backup files to load from.");
     }
 }

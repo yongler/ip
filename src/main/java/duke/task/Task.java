@@ -5,13 +5,14 @@ import java.time.LocalDateTime;
 /**
  * Task class.
  */
-public class Task implements Comparable<Task>{
+public class Task implements Comparable<Task> {
     protected String description;
     protected boolean isDone;
     protected TaskType taskType;
     protected LocalDateTime by;
 
     public Task() {}
+
     /**
      * Defines a task.
      * @param description Description of task to do.
@@ -83,8 +84,9 @@ public class Task implements Comparable<Task>{
 
     @Override
     public int compareTo(Task o) {
-        if (getDeadline() == null || o.getDeadline() == null)
+        if (getDeadline() == null || o.getDeadline() == null) {
             return 0;
+        }
         return getDeadline().compareTo(o.getDeadline());
     }
 }

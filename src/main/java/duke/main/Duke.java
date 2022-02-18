@@ -2,7 +2,6 @@ package duke.main;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.Scanner;
 
 import duke.exceptions.DukeException;
 import duke.task.Deadline;
@@ -10,8 +9,11 @@ import duke.task.Event;
 import duke.task.Task;
 import duke.task.Todo;
 
+/**
+ * Public class Duke for main Duke app.
+ */
 public class Duke {
-    private final Storage storage;
+    private Storage storage;
     private final Ui ui;
     private TaskList tasks;
 
@@ -30,6 +32,14 @@ public class Duke {
     }
 
     /**
+     * Create duke object without filepath.
+     */
+    public Duke() {
+        ui = new Ui();
+        tasks = new TaskList();
+    }
+
+    /**
      * Returns the response associated with input by user to be displayed on GUI.
      * @param input String input from user.
      * @return String to be displayed on GUI.
@@ -38,9 +48,7 @@ public class Duke {
         String[] str = Parser.splitInputStringBySpaces(input);
         String response = "";
 
-        if (str[0].compareTo("bye") == 0) {
-            response = ui.bye();
-        } else if (str[0].compareTo("list") == 0) {
+        if (str[0].compareTo("list") == 0) {
             response = listTask();
         } else if (str[0].compareTo("mark") == 0) {
             response = markTask(str);
@@ -51,20 +59,18 @@ public class Duke {
         } else if (str[0].compareTo("find") == 0) {
             response = findTask(str);
         } else if (str[0].equals("sort")) {
-            Collections.sort(tasks);
-            response = listTask();
+            response = sortTask();
         } else {
             try {
                 response = addTask(str);
             } catch (DukeException e) {
-                response = e.toString();
+                response = e.getMessage();
             }
         }
-
         try {
             storage.saveTasksToStorage(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DukeException e) {
+            response = e.getMessage();
         }
 
         return response;
@@ -78,7 +84,7 @@ public class Duke {
      */
     private void addTodo(String[] str) throws DukeException {
         if (str.length == 1) {
-            throw new DukeException("todo");
+            throw new DukeException(DukeException.TODO_ERROR);
         }
 
         StringBuilder stuff = new StringBuilder();
@@ -96,17 +102,16 @@ public class Duke {
      */
     private void addDeadline(String[] str) throws DukeException {
         if (str.length == 1) {
-            throw new DukeException("deadline");
+            throw new DukeException(DukeException.DEADLINE_ERROR);
         }
 
-        StringBuilder stuff = new StringBuilder();
+        StringBuilder description = new StringBuilder();
         StringBuilder deadline = new StringBuilder();
 
         for (int i = 1; i < str.length; i++) {
             if (str[i].compareTo("/by") == 0) {
                 for (int j = 1; j < i; j++) {
-                    stuff.append(str[j]).append(" ");
-
+                    description.append(str[j]).append(" ");
                 }
                 for (int j = i + 1; j < str.length; j++) {
                     deadline.append(str[j]).append(" ");
@@ -114,7 +119,7 @@ public class Duke {
                 break;
             }
         }
-        tasks.add(new Deadline(stuff.toString(), Parser.parseDate(deadline.toString())));
+        tasks.add(new Deadline(description.toString(), Parser.parseDate(deadline.toString())));
     }
 
     /**
@@ -126,16 +131,16 @@ public class Duke {
     private void addEvent(String[] str) throws DukeException {
 
         if (str.length == 1) {
-            throw new DukeException("event");
+            throw new DukeException(DukeException.EVENT_ERROR);
         }
 
-        StringBuilder stuff = new StringBuilder();
+        StringBuilder description = new StringBuilder();
         StringBuilder deadline = new StringBuilder();
 
         for (int i = 1; i < str.length; i++) {
             if (str[i].compareTo("/at") == 0) {
                 for (int j = 1; j < i; j++) {
-                    stuff.append(str[j]).append(" ");
+                    description.append(str[j]).append(" ");
                 }
                 for (int j = i + 1; j < str.length; j++) {
                     deadline.append(str[j]).append(" ");
@@ -143,13 +148,14 @@ public class Duke {
                 break;
             }
         }
-        tasks.add(new Event(stuff.toString(), Parser.parseDate(deadline.toString())));
+        tasks.add(new Event(description.toString(), Parser.parseDate(deadline.toString())));
     }
 
     /**
      * Adds a new task depending on type and append in to tasks.
      *
      * @param str The whole input string, split.
+     * @return Response string for adding task.
      * @throws DukeException if no details when adding.
      */
     private String addTask(String[] str) throws DukeException {
@@ -160,20 +166,21 @@ public class Duke {
         } else if (str[0].compareTo("event") == 0) {
             addEvent(str);
         } else {
-            throw new DukeException("tasks");
+            throw new DukeException(DukeException.TASK_ERROR);
         }
 
         ui.newMessage();
         ui.appendMessage("Got it. I've added this task: \n");
-        ui.appendMessage(String.format("%s\n",tasks.get(tasks.size() - 1)));
+        ui.appendMessage(String.format("%s\n", tasks.get(tasks.size() - 1)));
         ui.appendMessage(String.format("Now you have %d tasks in the list.\n", tasks.size()));
 
         return ui.getMessage();
     }
 
     /**
-     * Find task given task number.
+     * Finds task given task number.
      * @param str Info about task number.
+     * @return Response string for finding task.
      */
     private String findTask(String[] str) {
         String toFind = str[1];
@@ -181,26 +188,35 @@ public class Duke {
         ui.newMessage();
         ui.appendMessage("Here are the matching tasks in your list:\n");
 
-        for (int i =0;i <tasks.size();i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
             if (task.getDescription().contains(toFind)) {
-                ui.appendMessage(String.format("%d %s\n", i+1, task));
+                ui.appendMessage(String.format("%d. %s\n", i + 1, task));
             }
         }
         return ui.getMessage();
     }
 
     /**
-     * Delete task.
+     * Sorts task based on nearest deadline.
+     * @return Response string that contains sorted list of tasks.
+     */
+    private String sortTask() {
+        Collections.sort(tasks);
+        return listTask();
+    }
+
+    /**
+     * Deletes task with given task number.
      * @param str Info about task number.
+     * @return Response string for deleting task.
      */
     private String deleteTask(String[] str) {
         int k = Integer.parseInt(str[1]);
 
         ui.newMessage();
         ui.appendMessage("Noted. I've removed this task: \n");
-        ui.appendMessage(tasks.get(tasks.size() - 1).toString());
-        ui.appendNewLine();
+        ui.appendMessage(String.format("%s\n", tasks.get(k - 1)));
 
         tasks.remove(k - 1);
 
@@ -210,8 +226,9 @@ public class Duke {
     }
 
     /**
-     * Marks task as not done.
+     * Marks task with given task number as not done.
      * @param str Info about task number.
+     * @return Response string for un-marking task.
      */
     private String unmarkTask(String[] str) {
         int k = Integer.parseInt(str[1]);
@@ -219,14 +236,15 @@ public class Duke {
 
         ui.newMessage();
         ui.appendMessage("OK, I've marked this task as not done yet:\n");
-        ui.appendMessage(String.format("%s\n",tasks.get(k - 1)));
+        ui.appendMessage(String.format("%s\n", tasks.get(k - 1)));
 
         return ui.getMessage();
     }
 
     /**
-     * Marks task as done.
+     * Marks task with given task number as done.
      * @param str Info about task number.
+     * @return Response string for marking task.
      */
     private String markTask(String[] str) {
         int k = Integer.parseInt(str[1]);
@@ -234,13 +252,13 @@ public class Duke {
 
         ui.newMessage();
         ui.appendMessage("Nice! I've marked this task as done: \n");
-        ui.appendMessage(String.format("%s\n",tasks.get(k - 1)));
+        ui.appendMessage(String.format("%s\n", tasks.get(k - 1)));
 
         return ui.getMessage();
     }
 
     /**
-     * Prints out all tasks.
+     * @return Response string of all tasks to be listed out.
      */
     private String listTask() {
         ui.newMessage();
@@ -250,6 +268,22 @@ public class Duke {
         }
 
         return ui.getMessage();
+    }
+
+    /**
+     * Gets welcome message on initialize.
+     * @return Welcome message on initialize.
+     */
+    public String getWelcomeMessage() {
+        return ui.welcome();
+    }
+
+    /**
+     * Gets bye message on initialize.
+     * @return Bye message on close.
+     */
+    public String getByeMessage() {
+        return ui.bye();
     }
 
 }

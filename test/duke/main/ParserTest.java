@@ -17,7 +17,14 @@ class ParserTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HHmm");
         LocalDateTime test_date = LocalDateTime.parse(input.trim(), formatter);
 
-//        System.out.println(date);
         assertEquals(test_date, date);
+    }
+
+    @Test
+    void splitInputStringBySpaces() {
+        String input = "todo Homework";
+        String[] splittedInput = InputParser.splitInputStringBySpaces(input);
+        String[] testInput = {"todo", "Homework"};
+        assertEquals(testInput, splittedInput);
     }
 }

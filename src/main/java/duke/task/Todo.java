@@ -1,5 +1,4 @@
 package duke.task;
-import java.time.LocalDateTime;
 
 import static duke.task.TaskType.TODO;
 
@@ -7,7 +6,6 @@ import static duke.task.TaskType.TODO;
  * Todo class.
  */
 public class Todo extends Task {
-
     public Todo(String description) {
         super(description, TODO, null);
     }
